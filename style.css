@@ -14,3 +14,8 @@ img {
   text-align: center;
   margin-top: 20px;
 }
+
+.filter-count {
+  float: right;
+  color: rgba(0, 0, 0, 0.6);
+}

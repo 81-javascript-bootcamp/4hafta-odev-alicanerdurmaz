@@ -1,5 +1,6 @@
 import data from './data.js'
-import { searchMovieByTitle, makeBgActive } from './helpers.js'
+import { searchMovieByTitle, makeBgActive, parseFiltersFromMovieData } from './helpers.js'
+import { createMovieEl, createYearEl, createGenreEl } from './createElement.js'
 
 class MoviesApp {
   constructor(options) {
@@ -11,23 +12,28 @@ class MoviesApp {
     this.$searchForm = document.getElementById(searchForm)
     this.yearHandler = yearHandler
     this.$yearSubmitter = document.getElementById(yearSubmitter)
-  }
-
-  createMovieEl(movie) {
-    const { image, title, genre, year, id } = movie
-    return `<tr data-id="${id}"><td><img src="${image}" onerror="this.src='./assets/img/ImagePlaceholder.png'"></td><td>${title}</td><td>${genre}</td><td>${year}</td></tr>`
+    this.$filterByYearContainer = document.getElementById('filter-by-year')
+    this.$filterByGenreContainer = document.getElementById('filter-by-genre')
   }
 
   fillTable() {
-    /* const moviesHTML = data.reduce((acc, cur) => {
-            return acc + this.createMovieEl(cur);
-        }, "");*/
-    const moviesArr = data
-      .map((movie) => {
-        return this.createMovieEl(movie)
-      })
-      .join('')
-    this.$tbodyEl.innerHTML = moviesArr
+    const moviesHTML = data.reduce((acc, cur) => {
+      return acc + createMovieEl(cur)
+    }, '')
+
+    this.$tbodyEl.innerHTML = moviesHTML
+  }
+
+  fillFilters(filters) {
+    const { filterDataByGenre, filterDataByYear } = filters
+
+    this.$filterByGenreContainer.innerHTML = Object.keys(filterDataByGenre).reduce((acc, cur) => {
+      return acc + createGenreEl({ genre: cur, count: filterDataByGenre[cur] })
+    }, '')
+
+    this.$filterByYearContainer.innerHTML = Object.keys(filterDataByYear).reduce((acc, cur) => {
+      return acc + createYearEl({ year: cur, count: filterDataByYear[cur] })
+    }, '')
   }
 
   reset() {
@@ -65,6 +71,7 @@ class MoviesApp {
     this.fillTable()
     this.handleSearch()
     this.handleYearFilter()
+    this.fillFilters(parseFiltersFromMovieData(data))
   }
 }
 
