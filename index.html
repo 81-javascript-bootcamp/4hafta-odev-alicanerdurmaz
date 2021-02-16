@@ -24,20 +24,11 @@
             <form id="searchForm">
               <div class="mb-3">
                 <label for="searchInput" class="form-label">Search Movie</label>
-                <input type="text" class="form-control" id="searchInput" />
+                <input type="text" class="form-control" id="searchInput" required />
               </div>
               <button type="submit" class="btn btn-primary">Search</button>
             </form>
-          </div>
-          <div class="box">
-            <h5>Filter by year</h5>
-            <form id="filter-by-year"></form>
-            <button type="submit" class="btn btn-primary" id="yearSubmitter">Filter</button>
-          </div>
-          <div class="box">
-            <h5>Filter by genre</h5>
-            <form id="filter-by-genre"></form>
-            <button type="submit" class="btn btn-primary">Filter</button>
+            <div class="box" id="filters"></div>
           </div>
         </div>
         <div class="col-md-9">

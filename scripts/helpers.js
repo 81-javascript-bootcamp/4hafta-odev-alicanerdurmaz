@@ -6,17 +6,18 @@ export const makeBgActive = (movie) => {
   document.querySelector(`tr[data-id='${movie.id}']`).style.background = '#d7f0f7'
 }
 
-export const parseFiltersFromMovieData = (movieData) => {
-  let filterDataByYear = {}
-  let filterDataByGenre = {}
+export const parseValuesFromData = (data, values) => {
+  let filtersData = {}
 
-  movieData.forEach((movie, index) => {
-    filterDataByGenre.hasOwnProperty(movie.genre)
-      ? filterDataByGenre[movie.genre]++
-      : (filterDataByGenre[movie.genre] = 1)
+  values.forEach((value) => {
+    filtersData[value] = {}
 
-    filterDataByYear.hasOwnProperty(movie.year) ? filterDataByYear[movie.year]++ : (filterDataByYear[movie.year] = 1)
+    data.forEach((item) => {
+      filtersData[value].hasOwnProperty(item[value])
+        ? filtersData[value][item[value]]++
+        : (filtersData[value][item[value]] = 1)
+    })
   })
 
-  return { filterDataByGenre, filterDataByYear }
+  return filtersData
 }

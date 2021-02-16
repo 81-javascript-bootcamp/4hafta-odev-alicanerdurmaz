@@ -1,19 +1,18 @@
 import data from './data.js'
-import { searchMovieByTitle, makeBgActive, parseFiltersFromMovieData } from './helpers.js'
-import { createMovieEl, createYearEl, createGenreEl } from './createElement.js'
+import { searchMovieByTitle, makeBgActive } from './helpers.js'
+import { createMovieEl } from './createElement.js'
+import { createFiltersBoxes } from './components/FilterBox.js'
 
 class MoviesApp {
   constructor(options) {
-    const { root, searchInput, searchForm, yearHandler, yearSubmitter } = options
+    const { root, searchInput, searchForm, yearHandler, genreHandler } = options
     this.$tableEl = document.getElementById(root)
     this.$tbodyEl = this.$tableEl.querySelector('tbody')
 
     this.$searchInput = document.getElementById(searchInput)
     this.$searchForm = document.getElementById(searchForm)
     this.yearHandler = yearHandler
-    this.$yearSubmitter = document.getElementById(yearSubmitter)
-    this.$filterByYearContainer = document.getElementById('filter-by-year')
-    this.$filterByGenreContainer = document.getElementById('filter-by-genre')
+    this.genreHandler = genreHandler
   }
 
   fillTable() {
@@ -22,18 +21,6 @@ class MoviesApp {
     }, '')
 
     this.$tbodyEl.innerHTML = moviesHTML
-  }
-
-  fillFilters(filters) {
-    const { filterDataByGenre, filterDataByYear } = filters
-
-    this.$filterByGenreContainer.innerHTML = Object.keys(filterDataByGenre).reduce((acc, cur) => {
-      return acc + createGenreEl({ genre: cur, count: filterDataByGenre[cur] })
-    }, '')
-
-    this.$filterByYearContainer.innerHTML = Object.keys(filterDataByYear).reduce((acc, cur) => {
-      return acc + createYearEl({ year: cur, count: filterDataByYear[cur] })
-    }, '')
   }
 
   reset() {
@@ -46,20 +33,25 @@ class MoviesApp {
     this.$searchForm.addEventListener('submit', (event) => {
       event.preventDefault()
       this.reset()
+
       const searchValue = this.$searchInput.value
-      const matchedMovies = data
+      data
         .filter((movie) => {
           return searchMovieByTitle(movie, searchValue)
         })
         .forEach(makeBgActive)
+
+      document.getElementById('searchInput').value = ''
     })
   }
 
   handleYearFilter() {
-    this.$yearSubmitter.addEventListener('click', () => {
+    document.getElementById('yearSubmitter').addEventListener('click', () => {
       this.reset()
+
       const selectedYear = document.querySelector(`input[name='${this.yearHandler}']:checked`).value
-      const matchedMovies = data
+
+      data
         .filter((movie) => {
           return movie.year === selectedYear
         })
@@ -67,11 +59,28 @@ class MoviesApp {
     })
   }
 
+  handleGenreFilter() {
+    document.getElementById('genreSubmitter').addEventListener('click', () => {
+      this.reset()
+
+      const selectedGenres = [...document.querySelectorAll(`input[name='${this.genreHandler}']:checked`)].map(
+        (e) => e.value
+      )
+
+      data
+        .filter((movie) => {
+          return selectedGenres.includes(movie.genre)
+        })
+        .forEach(makeBgActive)
+    })
+  }
+
   init() {
     this.fillTable()
+    createFiltersBoxes(data, ['year', 'genre'])
     this.handleSearch()
     this.handleYearFilter()
-    this.fillFilters(parseFiltersFromMovieData(data))
+    this.handleGenreFilter()
   }
 }
 
@@ -80,7 +89,7 @@ let myMoviesApp = new MoviesApp({
   searchInput: 'searchInput',
   searchForm: 'searchForm',
   yearHandler: 'year',
-  yearSubmitter: 'yearSubmitter',
+  genreHandler: 'genre',
 })
 
 myMoviesApp.init()
