@@ -23,16 +23,27 @@ class MoviesApp {
     this.$tbodyEl.innerHTML = moviesHTML
   }
 
-  reset() {
+  reset(inputResetNames) {
     this.$tbodyEl.querySelectorAll('tr').forEach((item) => {
       item.style.background = 'transparent'
+    })
+
+    const queryFromArray = inputResetNames
+      .reduce((acc, curr, index) => {
+        return acc + `input[name='${curr}']:checked,`
+      }, '')
+      .slice(0, -1)
+
+    document.querySelectorAll(`${queryFromArray}`).forEach((item) => {
+      item.checked = false
     })
   }
 
   handleSearch() {
     this.$searchForm.addEventListener('submit', (event) => {
       event.preventDefault()
-      this.reset()
+
+      this.reset([this.genreHandler, this.yearHandler])
 
       const searchValue = this.$searchInput.value
       data
@@ -47,9 +58,9 @@ class MoviesApp {
 
   handleYearFilter() {
     document.getElementById('yearSubmitter').addEventListener('click', () => {
-      this.reset()
+      this.reset([this.genreHandler])
 
-      const selectedYear = document.querySelector(`input[name='${this.yearHandler}']:checked`).value
+      const selectedYear = document.querySelector(`input[name='${this.yearHandler}']:checked`)?.value
 
       data
         .filter((movie) => {
@@ -61,7 +72,7 @@ class MoviesApp {
 
   handleGenreFilter() {
     document.getElementById('genreSubmitter').addEventListener('click', () => {
-      this.reset()
+      this.reset([this.yearHandler])
 
       const selectedGenres = [...document.querySelectorAll(`input[name='${this.genreHandler}']:checked`)].map(
         (e) => e.value
