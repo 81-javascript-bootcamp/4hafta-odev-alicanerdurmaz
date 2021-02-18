@@ -1,13 +1,13 @@
 import { parseValuesFromData } from '../helpers.js'
 
-export const createFiltersBoxes = (data, values) => {
+export const createFiltersBoxes = (data, values, mountTo) => {
   const filters = parseValuesFromData(data, values)
 
   const filtersHTML = values.reduce((acc, curr) => {
     return acc + filtersContainer(curr, filters[curr])
   }, '')
 
-  document.getElementById('filters').innerHTML = filtersHTML
+  mountTo.innerHTML = filtersHTML
 }
 
 const filtersContainer = (title, data) => {
@@ -27,7 +27,7 @@ const filterListItem = (name, data) => {
       `
       <div class="form-check">
         <input class="form-check-input" name="${name}" id="${curr}" value="${curr}"
-        type="${findListTypeFromName[name] || 'checkbox'}" />
+        type="${findInputTypeFromName[name] || 'checkbox'}" />
         <label class="form-check-label" for="${curr}">${curr}</label>
         <span class="filter-count">(${data[curr]})</span>
       </div>
@@ -36,7 +36,7 @@ const filterListItem = (name, data) => {
   }, '')
 }
 
-const findListTypeFromName = {
+const findInputTypeFromName = {
   year: 'radio',
   genre: 'checkbox',
 }

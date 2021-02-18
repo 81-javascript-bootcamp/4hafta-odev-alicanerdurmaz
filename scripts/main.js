@@ -1,23 +1,28 @@
 import data from './data.js'
 import { searchMovieByTitle, makeBgActive } from './helpers.js'
-import { createMovieEl } from './createElement.js'
 import { createFiltersBoxes } from './components/FilterBox.js'
 
 class MoviesApp {
   constructor(options) {
-    const { root, searchInput, searchForm, yearHandler, genreHandler } = options
+    const { root, searchInput, searchForm, yearHandler, genreHandler, filterContainer } = options
     this.$tableEl = document.getElementById(root)
     this.$tbodyEl = this.$tableEl.querySelector('tbody')
 
     this.$searchInput = document.getElementById(searchInput)
     this.$searchForm = document.getElementById(searchForm)
+    this.$filterContainer = document.getElementById(filterContainer)
     this.yearHandler = yearHandler
     this.genreHandler = genreHandler
   }
 
+  createMovieEl = (movie) => {
+    const { image, title, genre, year, id } = movie
+    return `<tr data-id="${id}"><td><img src="${image}" onerror="this.src='./assets/img/ImagePlaceholder.png'"></td><td>${title}</td><td>${genre}</td><td>${year}</td></tr>`
+  }
+
   fillTable() {
     const moviesHTML = data.reduce((acc, cur) => {
-      return acc + createMovieEl(cur)
+      return acc + this.createMovieEl(cur)
     }, '')
 
     this.$tbodyEl.innerHTML = moviesHTML
@@ -29,7 +34,7 @@ class MoviesApp {
     })
 
     const queryFromArray = inputResetNames
-      .reduce((acc, curr, index) => {
+      .reduce((acc, curr) => {
         return acc + `input[name='${curr}']:checked,`
       }, '')
       .slice(0, -1)
@@ -88,7 +93,7 @@ class MoviesApp {
 
   init() {
     this.fillTable()
-    createFiltersBoxes(data, ['year', 'genre'])
+    createFiltersBoxes(data, ['year', 'genre'], this.$filterContainer)
     this.handleSearch()
     this.handleYearFilter()
     this.handleGenreFilter()
@@ -99,6 +104,7 @@ let myMoviesApp = new MoviesApp({
   root: 'movies-table',
   searchInput: 'searchInput',
   searchForm: 'searchForm',
+  filterContainer: 'filters',
   yearHandler: 'year',
   genreHandler: 'genre',
 })
